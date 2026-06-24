@@ -24,23 +24,20 @@ export default function DetailPage() {
     setLoading(true)
     setError(null)
     fetchProductById(id)
-      .then((data) => {
-        setProduct(data)
-        setSelectedImage(0)
-      })
+      .then((data) => { setProduct(data); setSelectedImage(0) })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false))
   }, [id])
 
   const goBack = () => navigate(backSearch ? `/?${backSearch}` : '/')
 
-  if (loading) return <div className="min-h-screen bg-gray-50"><Header /><Spinner /></div>
+  if (loading) return <div className="min-h-screen bg-gray-100"><Header sidebarOpen={false} onToggleSidebar={() => {}} /><Spinner /></div>
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="min-h-screen bg-gray-100">
+        <Header sidebarOpen={false} onToggleSidebar={() => {}} />
+        <div className="max-w-5xl mx-auto px-6 py-6">
           <ErrorMessage message={error ?? 'Product not found'} onRetry={goBack} />
         </div>
       </div>
@@ -50,47 +47,39 @@ export default function DetailPage() {
   const images = product.images?.length ? product.images : [product.thumbnail]
   const discountedPrice = product.price * (1 - (product.discountPercentage ?? 0) / 100)
 
-  const details: [string, string][] = [
-    ['Stock', product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'],
-    ['SKU', product.sku ?? '—'],
-    ['Weight', product.weight ? `${product.weight}g` : '—'],
-    ['Warranty', product.warrantyInformation ?? '—'],
-    ['Shipping', product.shippingInformation ?? '—'],
-    ['Return', product.returnPolicy ?? '—'],
-  ]
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gray-100">
+      <Header sidebarOpen={false} onToggleSidebar={() => {}} />
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-6 py-6">
+        {/* Back button */}
         <button
           onClick={goBack}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-8 px-4 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+          className="flex items-center gap-2 px-4 py-2 mb-6 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Back to results
+          Back
         </button>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 md:p-12 flex flex-col md:flex-row gap-10">
-          {/* Image Gallery */}
-          <div className="md:w-1/2 flex flex-col gap-3">
-            <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Image */}
+          <div className="md:w-80 shrink-0">
+            <div className="bg-white rounded-xl overflow-hidden aspect-square flex items-center justify-center p-6">
               <img
                 src={images[selectedImage]}
                 alt={product.title}
-                className="w-full h-full object-contain p-6"
+                className="w-full h-full object-contain"
               />
             </div>
             {images.length > 1 && (
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 mt-3 flex-wrap">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                    className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors bg-white ${
                       i === selectedImage ? 'border-blue-600' : 'border-gray-200 hover:border-gray-400'
                     }`}
                   >
@@ -101,62 +90,50 @@ export default function DetailPage() {
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="md:w-1/2 flex flex-col gap-5">
-            <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full uppercase tracking-wide w-fit">
-              {product.category}
-            </span>
+          {/* Info */}
+          <div className="flex-1 flex flex-col gap-4">
+            <h1 className="text-2xl font-bold text-gray-900">{product.title}</h1>
 
-            <h2 className="text-2xl font-bold text-gray-900">{product.title}</h2>
-
-            {product.brand && (
-              <p className="text-sm text-gray-500">
-                by <span className="font-medium text-gray-700">{product.brand}</span>
-              </p>
-            )}
-
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl font-bold text-gray-900">${discountedPrice.toFixed(0)}</span>
               <StarRating rating={product.rating} />
-              <span className="text-sm text-gray-400">
-                ({product.reviews?.length ?? 0} reviews)
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-blue-600">
-                ${discountedPrice.toFixed(2)}
-              </span>
               {(product.discountPercentage ?? 0) > 0 && (
-                <>
-                  <span className="text-lg text-gray-400 line-through">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                    -{product.discountPercentage?.toFixed(0)}% OFF
-                  </span>
-                </>
+                <span className="text-sm text-gray-400 line-through">${product.price.toFixed(0)}</span>
               )}
             </div>
 
-            <p className="text-gray-600 leading-relaxed">{product.description}</p>
+            <div className="border-t border-gray-200 pt-4 flex flex-col gap-2">
+              {product.brand && (
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Brand:</span> {product.brand}
+                </p>
+              )}
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Category:</span> {product.category}
+              </p>
+            </div>
 
-            <div className="border-t border-gray-100 pt-6 grid grid-cols-2 gap-5">
-              {details.map(([label, value]) => (
-                <div key={label}>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
-                  <p className="text-sm text-gray-700 font-medium mt-0.5">{value}</p>
+            <div className="border-t border-gray-200 pt-4">
+              <h2 className="text-base font-bold text-gray-900 mb-2">Description</h2>
+              <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
+            </div>
+
+            {product.reviews && product.reviews.length > 0 && (
+              <div className="border-t border-gray-200 pt-4">
+                <h2 className="text-base font-bold text-gray-900 mb-3">Reviews</h2>
+                <div className="flex flex-col gap-4">
+                  {product.reviews.map((review, i) => (
+                    <div key={i}>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-sm font-semibold text-gray-800">{review.reviewerName}</span>
+                        <StarRating rating={review.rating} />
+                      </div>
+                      <p className="text-sm text-gray-600">{review.comment}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-
-            <div className="flex gap-4 pt-2">
-              <button className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-semibold text-base hover:bg-blue-700 transition-colors tracking-wide">
-                Add to Cart
-              </button>
-              <button className="px-5 py-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 hover:text-red-500 text-xl">
-                ♡
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

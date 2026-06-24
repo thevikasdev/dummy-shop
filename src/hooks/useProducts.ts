@@ -14,7 +14,7 @@ interface UseProductsResult {
   retry: () => void
 }
 
-export function useProducts(filters: Filters): UseProductsResult {
+export function useProducts(filters: Filters, searchQuery = ''): UseProductsResult {
   const { category, minPrice, maxPrice, brands, page } = filters
 
   const [allProducts, setAllProducts] = useState<Product[]>([])
@@ -36,14 +36,14 @@ export function useProducts(filters: Filters): UseProductsResult {
     }
   }, [category])
 
-  useEffect(() => {
-    load()
-  }, [load])
+  useEffect(() => { load() }, [load])
 
   const min = minPrice !== '' ? parseFloat(minPrice) : null
   const max = maxPrice !== '' ? parseFloat(maxPrice) : null
+  const q = searchQuery.toLowerCase().trim()
 
   const filtered = allProducts.filter((p) => {
+    if (q && !p.title.toLowerCase().includes(q) && !p.brand?.toLowerCase().includes(q)) return false
     if (min !== null && p.price < min) return false
     if (max !== null && p.price > max) return false
     if (brands.length > 0 && !brands.includes(p.brand ?? '')) return false

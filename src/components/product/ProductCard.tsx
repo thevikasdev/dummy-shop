@@ -13,28 +13,23 @@ export default function ProductCard({ product, searchParams }: Props) {
   return (
     <div
       onClick={() => navigate(`/product/${product.id}?${searchParams}`)}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col"
+      className="bg-white rounded-xl border border-gray-100 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col"
     >
-      <div className="aspect-square overflow-hidden bg-gray-50">
+      <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden p-5">
         <img
           src={product.thumbnail}
           alt={product.title}
-          className="w-full h-full object-contain p-4"
+          className="w-full h-full object-contain"
           loading="lazy"
         />
       </div>
 
-      <div className="p-5 flex flex-col gap-3 flex-1">
-        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-snug">
+      <div className="px-4 pt-3 pb-4 flex flex-col gap-2">
+        <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 leading-snug">
           {product.title}
         </h3>
-
-        {product.brand && (
-          <p className="text-xs text-gray-400 uppercase tracking-wide">{product.brand}</p>
-        )}
-
-        <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-          <span className="text-xl font-bold text-blue-600">${product.price.toFixed(2)}</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-base font-bold text-gray-900">${product.price.toFixed(0)}</span>
           <StarRating rating={product.rating} />
         </div>
       </div>
