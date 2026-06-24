@@ -6,7 +6,7 @@ A product listing and detail application built with **React**, **TypeScript**, a
 
 ## Live Demo
 
-🔗 [Demo Link](#) *(update after deploying)*
+🔗 [Demo Link](#) (https://iridescent-sfogliatella-8976e8.netlify.app/)
 
 ---
 
